@@ -10,7 +10,6 @@ import MemoList from './MemoList';
 
 console.log(window.api)
 
-
 function App() {
   const [playerController, setPlayerController] = useState()
   const [videoFile, setVideoFile] = useState()
@@ -54,6 +53,8 @@ function App() {
       window.api.receiveData('sendNotionDbData', sendNotionDbDataAction)
       window.api.receiveData('sendBangsongList', sendBangsongListAction)
       window.api.receiveData('sendMemoList', sendMemoListAction)
+      
+      
       return (() => {
         window.api.removeEventListener('sendNotionDbData', sendNotionDbDataAction)
         window.api.removeEventListener('sendBangsongList', sendBangsongListAction)

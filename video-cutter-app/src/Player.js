@@ -3,6 +3,7 @@ import InputRange from './InputRange'
 import { useState, useEffect, memo, useRef } from 'react';
 import TimeLine from './TimeLine';
 import { sameVideo } from './helper';
+import SetFfmpegPath from './SetFfmpegPath';
 
 function requestVideoMetadata(videoFilePath) {
     window.api.sendPath(videoFilePath)
@@ -47,6 +48,7 @@ function Player({ videoFile, setPlayerController }) {
             return playerRef.current.getCurrentTime()
         }
     }
+
     useEffect(() => {
         setPlayerController(playerController)
         window.addEventListener("keydown", keyDownHandler)
@@ -56,16 +58,30 @@ function Player({ videoFile, setPlayerController }) {
         }
     })
     
+    const mainLogActiion = (e, data) => {
+        console.log(e, data)
+    }
+
     useEffect(() => {
         requestVideoMetadata(videoFile.path)
         window.api.receiveData('D', action)
-        return (() => window.api.removeEventListener('D', action))
+        window.api.receiveData('mainLog', mainLogActiion)
+
+        return (() => {
+            window.api.removeEventListener('D', action)
+            window.api.removeEventListener('mainLog', mainLogActiion)
+        })
     }, [videoFile])
 
+    
+
+    console.log('metadata', metadata)
     return (
         <div className='playerContainer'>
             <ReactPlayer ref={playerRef} url={videoFile.path} type={videoFile.type} controls width={'100%'} height={'100%'}/>
-            {(metadata===undefined)?null:(<>
+            {(metadata===undefined || metadata === null)?
+            (<SetFfmpegPath></SetFfmpegPath>):
+            (<>
                 <TimeLine duration={start} setValue={setStart} playerController={playerController}></TimeLine>
                 <InputRange maxRange={metadata.duration} setValue={setStart} value={start}></InputRange>
                 <TimeLine duration={end} setValue={setEnd} playerController={playerController}></TimeLine>

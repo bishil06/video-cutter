@@ -3,8 +3,8 @@ const path = require('path');
 const ffmpeg = require('fluent-ffmpeg')
 const { Client } = require("@notionhq/client") 
 
-const { app, BrowserWindow, ipcMain } = require('electron');
-const { CLIENT_RENEG_LIMIT } = require('tls');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+
 // const isDev = require('electron-is-dev');
 
 const isDev = false
@@ -53,13 +53,25 @@ app.on('activate', () => {
 });
 
 let count = 0;
+let lastVideoPath = null
 
 ipcMain.on('path', (event, path) => {
-    console.log('receive path', count+=1)
+    if (path === undefined) {
+      path = lastVideoPath
+    }
+    else {
+      lastVideoPath = path
+    }
+    
+    console.log('receive path', count+=1, path)
 
     ffmpeg.ffprobe(path, (err, metadata) => {
-        console.log(err, metadata.format)
-        if (win !== null) {
+        console.log(err, metadata)
+
+        if (err !== null) {
+          return console.error(err)
+        }
+        else if (win !== null) {
             win.webContents.send('D', metadata.format)
         }
     })
@@ -143,8 +155,6 @@ async function *getAllMemoList(dbid, bangsongId) {
   }
 }
 
-
-
 ipcMain.on('requestMemoList', async (e, [memoDB, bangsong]) => {
   let results = []
   for await (const memo of getAllMemoList(memoDB.id, bangsong.id)) {
@@ -154,4 +164,26 @@ ipcMain.on('requestMemoList', async (e, [memoDB, bangsong]) => {
   if (win !== null) {
     win.webContents.send('sendMemoList', results)
   }
+})
+
+ipcMain.on('requestOpenSelectDirectory', () => {
+  dialog.showOpenDialog(win, {
+    properties: ['openDirectory']
+  }).then((r) => {
+    
+    console.log(r.filePaths)
+
+    if (!r.canceled) {
+      win.webContents.send('mainLog', `${r.filePaths[0]} ${path.join(r.filePaths[0], 'ffmpeg')}`)
+      ffmpeg.setFfmpegPath(path.join(r.filePaths[0], 'ffmpeg'))
+      ffmpeg.setFfprobePath(path.join(r.filePaths[0], 'ffprobe'))
+      
+      if (lastVideoPath !== null) {
+        console.log('lastVideoPath', lastVideoPath)
+
+        ipcMain.emit('path')
+      }
+      // 
+    }
+  })
 })

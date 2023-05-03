@@ -18,5 +18,8 @@ contextBridge.exposeInMainWorld('api', {
     },
     requestMemoList(memoDB, bangsong) {
         return ipcRenderer.send('requestMemoList', [memoDB, bangsong])
+    },
+    requestOpenSelectDirectory() {
+        return ipcRenderer.send('requestOpenSelectDirectory')
     }
 })
