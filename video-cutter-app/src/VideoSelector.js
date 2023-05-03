@@ -7,6 +7,9 @@ export default function VideoSelector({setVideoFile}) {
     }
 
     return (
-        <input type="file" accept="video/*" onChange={handleChange} />
+        <div width="100%">
+            <input type="file" accept="video/*" onChange={handleChange} style={{width: '100%'}}/>
+        </div>
+        
     )
 }

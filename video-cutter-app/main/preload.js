@@ -9,5 +9,14 @@ contextBridge.exposeInMainWorld('api', {
     },
     removeEventListener(ch, listener) {
         return ipcRenderer.removeListener(ch, listener)
+    },
+    sendNotionApiKey(key) {
+        return ipcRenderer.send('sendNotionApiKey', key)
+    },
+    requestBangsongList(bangsongDB) {
+        return ipcRenderer.send('requestBangsongList', bangsongDB)
+    },
+    requestMemoList(memoDB, bangsong) {
+        return ipcRenderer.send('requestMemoList', [memoDB, bangsong])
     }
 })

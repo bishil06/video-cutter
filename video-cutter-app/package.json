@@ -5,9 +5,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@notionhq/client": "^2.2.4",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "allotment": "^1.19.0",
     "deep-equal": "^2.2.1",
     "electron-is-dev": "^2.0.0",
     "electron-squirrel-startup": "^1.0.0",
