@@ -73,12 +73,10 @@ function Player({ videoFile, setPlayerController }) {
         })
     }, [videoFile])
 
-    
-
     console.log('metadata', metadata)
     return (
         <div className='playerContainer'>
-            <ReactPlayer ref={playerRef} url={videoFile.path} type={videoFile.type} controls width={'100%'} height={'100%'}/>
+            <ReactPlayer className="reactPlayer" ref={playerRef} url={videoFile.path} type={videoFile.type} controls width='100%' height='100%'/>
             {(metadata===undefined || metadata === null)?
             (<SetFfmpegPath></SetFfmpegPath>):
             (<>
