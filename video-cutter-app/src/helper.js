@@ -16,3 +16,7 @@ export function getHMS(duration) {
     if (seconds < 10) {seconds = "0"+seconds;}
     return [hours, minutes, seconds]
 }
+
+export function convertHMStoDuration(h, m, s) {
+    return s+m*60+h*60*60
+}
