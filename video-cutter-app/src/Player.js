@@ -4,12 +4,14 @@ import { useState, useEffect, memo, useRef } from 'react';
 import TimeLine from './TimeLine';
 import { sameVideo } from './helper';
 import SetFfmpegPath from './SetFfmpegPath';
+import MemoWriter from './MemoWriter';
+import { getHMS } from './helper';
 
 function requestVideoMetadata(videoFilePath) {
     window.api.sendPath(videoFilePath)
 }
 
-function Player({ videoFile, setPlayerController }) {
+function Player({ videoFile, setPlayerController, makeRequestWriteMemoToNotion }) {
     const playerRef = useRef()
     const [metadata, setMetadata] = useState()
     const [start, setStart]= useState(0)
@@ -85,6 +87,7 @@ function Player({ videoFile, setPlayerController }) {
                 <TimeLine duration={end} setValue={setEnd} playerController={playerController}></TimeLine>
                 <InputRange maxRange={metadata.duration} setValue={setEnd} value={end}></InputRange>
             </>)}
+            <MemoWriter writeMemoToNotion={makeRequestWriteMemoToNotion(getHMS(start).join(':'))}></MemoWriter>
         </div>
     )
 }

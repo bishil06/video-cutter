@@ -2,6 +2,7 @@ const path = require('path');
 
 const ffmpeg = require('fluent-ffmpeg')
 const { Client } = require("@notionhq/client") 
+const { ApiClient } = require('@twurple/api')
 
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 
@@ -113,7 +114,7 @@ ipcMain.on('requestBangsongList', (e, bangsongDB) => {
       }]
     }).then(({results}) => {
       if (win !== null) {
-        win.webContents.send('sendBangsongList', results)
+        win.webContents.send('sendBangsongList', { bangsongDB, results })
       }
     })
   }
@@ -162,7 +163,7 @@ ipcMain.on('requestMemoList', async (e, [memoDB, bangsong]) => {
   }
 
   if (win !== null) {
-    win.webContents.send('sendMemoList', results)
+    win.webContents.send('sendMemoList', { memoDB, results, bangsong })
   }
 })
 
@@ -187,3 +188,41 @@ ipcMain.on('requestOpenSelectDirectory', () => {
     }
   })
 })
+
+ipcMain.on('requestWriteMemoToNotion', (e, [dbId, relationId, memoTitle, hmsString]) => {
+  console.log('requestWriteMemoToNotion', [dbId, relationId, memoTitle, hmsString])
+  if (notionApiKey !== null && client !== null) {
+    console.log('run create')
+    client.pages.create({
+      parent: {
+        database_id: dbId
+      },
+      properties: {
+        '이름': {
+          title: [{
+            text: {
+              content: memoTitle
+            }
+          }]
+        },
+        '방송': {
+          relation: [{
+            id: relationId
+          }]
+        },
+        '수동타임라인': {
+          rich_text: [{
+            text: {
+              content: hmsString
+            }
+          }]
+        }
+      }
+    }).then(console.log)
+  }
+})
+
+// // video trim
+// ipcMain.on('trim', ([ss, to]) => {
+
+// })

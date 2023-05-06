@@ -21,5 +21,8 @@ contextBridge.exposeInMainWorld('api', {
     },
     requestOpenSelectDirectory() {
         return ipcRenderer.send('requestOpenSelectDirectory')
+    },
+    requestWriteMemoToNotion(dbId, relationId, memoTitle, hmsString) {
+        return ipcRenderer.send('requestWriteMemoToNotion', [dbId, relationId, memoTitle, hmsString])
     }
 })

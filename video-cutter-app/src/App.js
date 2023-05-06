@@ -17,6 +17,7 @@ function App() {
   const [notionDbData, setNotionDbData] = useState()
   const [bangsongList, setBangsongList] = useState()
   const [memoToggle, setMemoToggle] = useState(false)
+  const [selectedBangsong, setSelectedBangsong] = useState()
   const [memoList, setMemoList] = useState()
 
   const sendNotionDbDataAction = (e, notionDbDatas) => {
@@ -34,14 +35,16 @@ function App() {
     setNotionDbData(obj)
   }
 
-  const sendBangsongListAction = (e, bangsongList) => {
-    console.log(bangsongList)
-    setBangsongList(bangsongList)
+  const sendBangsongListAction = (e, { bangsongDB, results }) => {
+    console.log(bangsongDB, results)
+    setBangsongList(results)
   }
 
-  const sendMemoListAction = (e, memoList) => {
-    console.log(memoList)
-    setMemoList(memoList)
+  const sendMemoListAction = (e, { memoDB, results, bangsong }) => {
+    console.log(memoDB, results, bangsong)
+    
+    setSelectedBangsong(bangsong)
+    setMemoList(results)
   }
 
   console.log('notionDbData', notionDbData)
@@ -74,6 +77,13 @@ function App() {
     return window.api.requestMemoList(notionDbData['memoDB'], bangsong)
   }
 
+  function makeRequestWriteMemoToNotion() {
+    return (hmsString) => (memoTitle) => {
+      console.log(notionDbData['memoDB'].id, selectedBangsong.id, memoTitle, hmsString)
+      return window.api.requestWriteMemoToNotion(notionDbData['memoDB'].id, selectedBangsong.id, memoTitle, hmsString)
+    }
+  }
+
   return (
     <div className="App">
       <InputNotionApiKey setNotionApiKey={setNotionApiKey}></InputNotionApiKey>
@@ -85,7 +95,7 @@ function App() {
           <Allotment.Pane>
             <div style={{textAlign: 'center'}}>
               <h1>video</h1>
-              {(videoFile!==undefined)?<Player videoFile={videoFile} setPlayerController={setPlayerController}></Player>:null}
+              {(videoFile!==undefined)?<Player videoFile={videoFile} setPlayerController={setPlayerController} makeRequestWriteMemoToNotion={makeRequestWriteMemoToNotion()} requestWriteMemoToNotion={makeRequestWriteMemoToNotion()}></Player>:null}
             </div>
           </Allotment.Pane>
           <Allotment.Pane>
