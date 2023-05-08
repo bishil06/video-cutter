@@ -24,5 +24,9 @@ contextBridge.exposeInMainWorld('api', {
     },
     requestWriteMemoToNotion(dbId, relationId, memoTitle, hmsString) {
         return ipcRenderer.send('requestWriteMemoToNotion', [dbId, relationId, memoTitle, hmsString])
+    },
+    requestTrim(startHMS, duration, filename) {
+        console.log(startHMS, duration, filename)
+        return ipcRenderer.send('requestTrim', [startHMS, duration, filename])
     }
 })

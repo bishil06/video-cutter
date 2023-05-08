@@ -1,5 +1,6 @@
 const path = require('path');
 
+const { createReadStream, createWriteStream } = require('fs')
 const ffmpeg = require('fluent-ffmpeg')
 const { Client } = require("@notionhq/client") 
 const { ApiClient } = require('@twurple/api')
@@ -55,6 +56,7 @@ app.on('activate', () => {
 
 let count = 0;
 let lastVideoPath = null
+let lastSavePath = app.getPath('desktop')
 
 ipcMain.on('path', (event, path) => {
     if (path === undefined) {
@@ -222,7 +224,29 @@ ipcMain.on('requestWriteMemoToNotion', (e, [dbId, relationId, memoTitle, hmsStri
   }
 })
 
-// // video trim
-// ipcMain.on('trim', ([ss, to]) => {
-
-// })
+// video trim
+ipcMain.on('requestTrim', (e, [startHMS, duration, filename]) => {
+  const videoFileName = path.basename(lastVideoPath, path.extname(lastVideoPath))
+  const dateReg = RegExp(/\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])/)
+  dialog.showSaveDialog({
+    defaultPath: path.join((lastSavePath !== null)?lastSavePath:app.getPath('desktop'), `${(dateReg.test(videoFileName))?(dateReg.exec(videoFileName)[0]):('')}-${startHMS}-${duration}-${filename+'.mp4'}`)
+  })
+    .then(r => {
+      if (r.canceled === false) {
+        lastSavePath = path.dirname(r.filePath)
+        console.log(r.filePath, lastSavePath)
+        console.log(lastVideoPath)
+        
+        const command = ffmpeg()
+        command
+          .input(lastVideoPath)
+          .inputOptions([`-ss ${startHMS}`, '-noaccurate_seek'])
+          .outputOptions([`-t ${duration}`])
+          .addOption('-c', 'copy')
+          .output(r.filePath)
+          .format('mp4')
+          .on('error', console.error)
+          .run()
+      } 
+    })
+})

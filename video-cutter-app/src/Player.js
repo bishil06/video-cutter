@@ -51,6 +51,12 @@ function Player({ videoFile, setPlayerController, makeRequestWriteMemoToNotion }
         }
     }
 
+    function requestTrim(filename) {
+        if (start < end) {
+            return window.api.requestTrim(getHMS(Math.floor(start)).join(':'), Math.ceil(end-start), filename)
+        }   
+    }
+
     useEffect(() => {
         setPlayerController(playerController)
         window.addEventListener("keydown", keyDownHandler)
@@ -87,7 +93,7 @@ function Player({ videoFile, setPlayerController, makeRequestWriteMemoToNotion }
                 <TimeLine duration={end} setValue={setEnd} playerController={playerController}></TimeLine>
                 <InputRange maxRange={metadata.duration} setValue={setEnd} value={end}></InputRange>
             </>)}
-            <MemoWriter writeMemoToNotion={makeRequestWriteMemoToNotion(getHMS(start).join(':'))}></MemoWriter>
+            <MemoWriter writeMemoToNotion={makeRequestWriteMemoToNotion(getHMS(start).join(':'))} requestTrim={requestTrim}></MemoWriter>
         </div>
     )
 }

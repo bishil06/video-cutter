@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function MemoWriter({ writeMemoToNotion }) {
+export default function MemoWriter({ writeMemoToNotion, requestTrim }) {
     const [memoInput, setMemoInput] = useState('')
 
     return (<>
@@ -9,5 +9,6 @@ export default function MemoWriter({ writeMemoToNotion }) {
             writeMemoToNotion(memoInput)
             setMemoInput('')
         }}>메모작성</button>
+        <button onClick={() => requestTrim(memoInput)}>컷편집</button>
     </>)
 }
