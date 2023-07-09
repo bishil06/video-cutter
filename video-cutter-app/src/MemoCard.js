@@ -11,7 +11,7 @@ export default function MemoCard({memo, playerController}) {
     }
     
     const realDuration = (memo.properties.실시간메모.checkbox)
-    ?(((new Date(memo.properties.생성일.created_time) - new Date(memo.properties.방송시작시간.rollup.date.start))+60*60*9*1000)/1000)
+    ?(((new Date(memo.properties.생성일.created_time) - new Date(memo.properties.방송시작시간.rollup.date.start))+60*60*9*1000)/1000 + memo.properties.초.rollup.number)
     :((memo.properties.수동타임라인.rich_text.reduce((acc, v) => acc+v.plain_text, '').length === 8)
         ?convertHMStoDuration(...memo.properties.수동타임라인.rich_text.reduce((acc, v) => acc+v.plain_text, '').split(':').map(Number))
         :0

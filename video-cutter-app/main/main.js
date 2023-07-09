@@ -1,9 +1,7 @@
 const path = require('path');
 
-const { createReadStream, createWriteStream } = require('fs')
 const ffmpeg = require('fluent-ffmpeg')
 const { Client } = require("@notionhq/client") 
-const { ApiClient } = require('@twurple/api')
 
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 
@@ -229,7 +227,7 @@ ipcMain.on('requestTrim', (e, [startHMS, duration, filename]) => {
   const videoFileName = path.basename(lastVideoPath, path.extname(lastVideoPath))
   const dateReg = RegExp(/\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])/)
   dialog.showSaveDialog({
-    defaultPath: path.join((lastSavePath !== null)?lastSavePath:app.getPath('desktop'), `${(dateReg.test(videoFileName))?(dateReg.exec(videoFileName)[0]):('')}-${startHMS}-${duration}-${filename+'.mp4'}`)
+    defaultPath: path.join((lastSavePath !== null)?lastSavePath:app.getPath('desktop'), `${(dateReg.test(videoFileName))?(dateReg.exec(videoFileName)[0]):('')}-${startHMS.replaceAll(':', ',')}-${duration}-${filename+'.mp4'}`)
   })
     .then(r => {
       if (r.canceled === false) {
