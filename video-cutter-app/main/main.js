@@ -225,9 +225,11 @@ ipcMain.on('requestWriteMemoToNotion', (e, [dbId, relationId, memoTitle, hmsStri
 // video trim
 ipcMain.on('requestTrim', (e, [startHMS, duration, filename]) => {
   const videoFileName = path.basename(lastVideoPath, path.extname(lastVideoPath))
+  console.log('test', path.extname(lastVideoPath))
+
   const dateReg = RegExp(/\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])/)
   dialog.showSaveDialog({
-    defaultPath: path.join((lastSavePath !== null)?lastSavePath:app.getPath('desktop'), `${(dateReg.test(videoFileName))?(dateReg.exec(videoFileName)[0]):('')}-${startHMS.replaceAll(':', ',')}-${duration}-${filename+'.mp4'}`)
+    defaultPath: path.join((lastSavePath !== null)?lastSavePath:app.getPath('desktop'), `${(dateReg.test(videoFileName))?(dateReg.exec(videoFileName)[0]):('')}-${startHMS.replaceAll(':', ',')}-${duration}-${filename+path.extname(lastVideoPath)}`)
   })
     .then(r => {
       if (r.canceled === false) {
@@ -240,11 +242,12 @@ ipcMain.on('requestTrim', (e, [startHMS, duration, filename]) => {
           .input(lastVideoPath)
           .inputOptions([`-ss ${startHMS}`, '-noaccurate_seek'])
           .outputOptions([`-t ${duration}`])
-          .addOption('-c', 'copy')
+          .addOption(['-map 0', '-c copy'])
           .output(r.filePath)
-          .format('mp4')
+          .format(path.extname(lastVideoPath).split('.')[1] === 'mkv' ? 'matroska' : 'mp4')
           .on('error', console.error)
-          .run()
+
+        command.run()
       } 
-    })
+    }) 
 })

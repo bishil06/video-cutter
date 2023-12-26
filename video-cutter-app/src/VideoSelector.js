@@ -16,7 +16,7 @@ export default function VideoSelector({setVideoFile}) {
 
     return (
         <div width="100%">
-            <input type="file" accept="video/*" onChange={handleChange} style={{width: '100%'}}/>
+            <input type="file" onChange={handleChange} style={{width: '100%'}}/>
             <label>웹주소</label><input type="url" onChange={(e) => setUrlInput(e.target.value)} value={urlInput}></input><button onClick={urlHandle}>입력</button>
         </div>
         
